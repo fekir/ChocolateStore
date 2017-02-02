@@ -37,17 +37,26 @@ namespace ChocolateStore
 
             Arguments arguments = new Arguments();
 
-            if (args.Length != 2)
-            {
-                WriteError("USAGE: ChocolateStore <directory> <url>");
+            if (args.Length != 2 && args.Length != 3 )
+			{
+                WriteError("USAGE: ChocolateStore <directory> <url> <optional: store directory>");
                 return null;
             }
 
             arguments.Directory = args[0];
 
-            if (!Directory.Exists(arguments.Directory))
+			if (args.Length == 3)
+			{
+				arguments.CacheDir = args[2];
+			}
+			else
+			{
+				arguments.CacheDir = arguments.Directory;
+			}
+
+			if (!Directory.Exists(arguments.CacheDir))
             {
-                WriteError("Directory '{0}' does not exist.", arguments.Directory);
+				WriteError("Directory '{0}' does not exist.", arguments.CacheDir);
                 return null;
             }
 
