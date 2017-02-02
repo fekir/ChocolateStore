@@ -21,7 +21,7 @@ namespace ChocolateStore
 
                 if (arguments != null)
                 {
-                    cacher.CachePackage(arguments.Directory, arguments.Url);
+                    cacher.CachePackage(arguments.Directory, arguments.Url, arguments.CacheDir);
                 }
 
             }

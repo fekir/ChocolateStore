@@ -17,12 +17,12 @@ namespace ChocolateStore
 		public delegate void DownloadFailedHandler(string url, Exception ex);
 
 		public event FileHandler SkippingFile = delegate { };
-		public event FileHandler DownloadingFile = delegate { };		
+		public event FileHandler DownloadingFile = delegate { };
 		public event DownloadFailedHandler DownloadFailed = delegate { };
 
-		public void CachePackage(string dir, string url)
+		public void CachePackage(string dir, string url, string cachedir)
 		{
-			var packagePath = DownloadFile(url, dir);
+			var packagePath = DownloadFile(url, cachedir, cachedir);
 
 			using (var zip = ZipFile.Read(packagePath))
 			{
@@ -41,7 +41,7 @@ namespace ChocolateStore
                         }
                     }
 
-					content = CacheUrlFiles(Path.Combine(dir, packageName), content);
+					content = CacheUrlFiles(Path.Combine(dir, packageName), content, Path.Combine(cachedir, packageName));
 					zip.UpdateEntry(INSTALL_FILE, content);
 					zip.Save();
 
@@ -51,20 +51,22 @@ namespace ChocolateStore
 
 		}
 
-		private string CacheUrlFiles(string folder, string content)
+		private string CacheUrlFiles(string folder, string content, string cachedir)
 		{
 
             const string pattern = "(?<=['\"])http[\\S ]*(?=['\"])";
 
-			if (!Directory.Exists(folder)) {
-				Directory.CreateDirectory(folder);
+			if (!Directory.Exists(cachedir)) {
+				Directory.CreateDirectory(cachedir);
 			}
 
-			return Regex.Replace(content, pattern, new MatchEvaluator(m => DownloadFile(m.Value, folder)));
+			return Regex.Replace(content, pattern, new MatchEvaluator(m => DownloadFile(m.Value, cachedir, folder)));
 
 		}
 
-		private string DownloadFile(string url, string destination)
+		// the third parameter is used as return value for the matcher,
+		// the file is downloaded at destination
+		private string DownloadFile(string url, string destination, string store)
 		{
 
 			try
@@ -87,7 +89,7 @@ namespace ChocolateStore
 					}
 				}
 
-				return filePath;
+				return Path.Combine(store, fileName);
 			}
 			catch (Exception ex)
 			{
