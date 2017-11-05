@@ -7,7 +7,7 @@ Apache 2.0 - see LICENSE
 
 ### COMPILATION REQUIREMENTS
 * Visual Studio 2010
-* .NET Framewrok 4.0
+* .NET Framework 4.0
 * NuGet Package Manager with "Allow NuGet to download missing packages" setting enabled
 
 ### SYNTAX
